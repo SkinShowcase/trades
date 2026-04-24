@@ -1,0 +1,29 @@
+# Профиль docker: порт 8080 (для healthcheck) и PostgreSQL.
+# Отдельная таблица истории Flyway — одна БД skins для auth, items, messaging, trades.
+server:
+  port: 8080
+
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    table: flyway_trades_schema_history
+
+# В docker-сети доступ к steam-gateway идет по service-name, а не localhost.
+steam-gateway:
+  base-url: ${STEAM_GATEWAY_BASE_URL:http://steam-gateway:8080}
+
+# Каталог цен для фильтрации наборов в ленте (GET /feed/sets/filtered).
+items:
+  base-url: ${ITEMS_BASE_URL:http://items:8080}
+
+auth-service:
+  base-url: ${AUTH_SERVICE_BASE_URL:http://auth:8080}
+  internal-service-key: ${AUTH_INTERNAL_SERVICE_KEY:}
+
+app:
+  auth:
+    jwt:
+      secret: ${AUTH_JWT_SECRET:?AUTH_JWT_SECRET required}
+  steam-id-protection:
+    key: ${TRADES_STEAM_ID_CRYPTO_KEY:?TRADES_STEAM_ID_CRYPTO_KEY required}
